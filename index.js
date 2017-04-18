@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hide by tags
 // @namespace    http://babanin.de/
-// @version      0.5
+// @version      0.8
 // @description  try to take over the world! and hide gitlab issues by tags
 // @author       Daniil Babanin
 // @homepageURL  https://github.com/DaniilBabanin/hideIssuesByTag
@@ -18,7 +18,9 @@
 function hideGitlabTags() {
   'use strict';
   var opacityLables = [
-    'Ready for Test',
+    'Ready for(.*)Test',
+    'Ready for Release',
+    'Blocked',
     'Concept',
     'Draft',
     'won\'t fix',
@@ -27,7 +29,6 @@ function hideGitlabTags() {
     'Ready for Release'
   ];
   var ignoreLables = [
-    'Blocked'
   ];
 
   [].forEach.call(document.getElementsByClassName('issue'), function(issue) {
@@ -47,10 +48,17 @@ function hideGitlabTags() {
           issue.style.display = 'none';
           return;
         }
-        if(opacityLables.indexOf(String(tagText)) !== -1){
-          issue.style.opacity = 0.5;
-          return;
-        }
+        for ( var i in opacityLables ) {
+          var label = opacityLables[i];
+          if ( typeof(label) !== "string" ) {
+
+            continue;
+          }
+          if ( String(tagText).match(label) !== null ) {
+        issue.style.opacity = 0.5;
+        return;
+      }
+    }
       }
     });
   });
